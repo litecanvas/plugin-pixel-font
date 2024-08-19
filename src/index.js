@@ -1,9 +1,8 @@
 let fontCache = {}
 
 litecanvas({
-  width: 320,
-  pixelart: true,
-  loop: {init, draw}
+  // width: 256,
+  pixelart: true
 })
 
 function init() {
@@ -11,12 +10,12 @@ function init() {
 
 function draw() {
   cls(0)
-  drawText(10, 10, 'Hello world!!')
+  drawText(0, 0, 'Hello world!!', 4, 3)
   text(10, 50, 'Hello world!!')
 }
 
-function drawText(x, y, text, color = 3, size = 32) {
-  let font = getFont(color, size)
+function drawText(x, y, text, color = 3, pixelSize = 1) {
+  let font = getFont(color, pixelSize)
   let ch = font.charList
   let spaceWidth = font.charWidth + (floor(font.charWidth/6) || 1)
 
@@ -29,7 +28,7 @@ function drawText(x, y, text, color = 3, size = 32) {
   }
 }
 
-function getFont(color = 3, size = 32) {
+function getFont(color = 3, size = 1) {
   const cacheKey = `${color}:${size}`
   if (fontCache[cacheKey]) return fontCache[cacheKey]
 
@@ -92,7 +91,7 @@ function getFont(color = 3, size = 32) {
   const charWidth = 5
   const charHeight = 7
 
-  const scale = Math.floor(size/12)
+  const scale = Math.max(size, 1)
   const bitmapFont = paint(charWidth*cols, charHeight*rows, pixels, {
     scale
   })
