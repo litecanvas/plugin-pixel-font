@@ -10,7 +10,7 @@ function init() {
 
 function draw() {
   cls(0)
-  drawText(0, 0, 'Hello world!!', 4, 3)
+  drawText(0, 0, 'Hello world!!', 4, 5)
   text(10, 50, 'Hello world!!')
 }
 
@@ -91,7 +91,7 @@ function getFont(color = 3, size = 1) {
   const charWidth = 5
   const charHeight = 7
 
-  const scale = Math.max(size, 1)
+  const scale = Math.max(~~size, 1)
   const bitmapFont = paint(charWidth*cols, charHeight*rows, pixels, {
     scale
   })
