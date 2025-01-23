@@ -10,16 +10,16 @@ function init() {
 
 function draw() {
   cls(0)
-  drawText(0, 0, 'Hello world!!', 4, 5)
+  drawPixelText(0, 0, 'Hello world!!', 4, 5)
   text(10, 50, 'Hello world!!')
 }
 
-function drawText(x, y, text, color = 3, pixelSize = 1) {
+function drawPixelText(x, y, message, color = 3, pixelSize = 1) {
   let font = getFont(color, pixelSize)
   let ch = font.charList
   let spaceWidth = font.charWidth + (floor(font.charWidth/6) || 1)
 
-  for (let char of text) {
+  for (let char of message) {
     const i = char.charCodeAt(0) - 32
     if (' ' !== char && ch[i]) {
       image(x, y, ch[i])
