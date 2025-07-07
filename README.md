@@ -31,6 +31,8 @@ litecanvas({
 use(pluginPixelFont)
 
 function draw() {
+  cls(0)
+
   // activate the pixel font
   textfont(PIXEL_FONT_BASIC)
 
@@ -45,6 +47,8 @@ function draw() {
   text(0, 50, 'Text with browser font')
 }
 ```
+
+[See this example on playground](https://litecanvas.js.org?c=eJxNjssKwjAQRff9itk1BUVd6F5FURAVFHQnsZ1iICQyGa0P%2FHcntQVhFhfm3Ic1jLl2dx3U%2B5MlSXlzORvvoCBdqQzeCUBug%2BpnIuR6PdAC3DUj8AXhah5oofSO5cn44CjVdnmcrU7zzXp%2Fmox3y6kE19aAXLsiCMG8sDFFqQajFnO%2BAkJXIMHT3%2BhXIo1FDTce1e%2BAXLpAaz0cPNkibQMI26Y4p8lC%2Bp%2BYBu1CNyCZMs3%2BIocxcx%2F3VYYvcCZfCVTnCPf5ApPaX2E%3D)
 
 ## API
 

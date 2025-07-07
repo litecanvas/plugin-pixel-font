@@ -1,6 +1,6 @@
 {
   "name": "@litecanvas/plugin-pixel-font",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Plugin to let you render a pixel font to emulate retro vibes in your Litecanvas projects.",
   "author": "Luiz Bills <luizbills@pm.me>",
   "license": "MIT",
