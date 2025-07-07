@@ -1,6 +1,6 @@
 # Pixel Font for Litecanvas
 
-A simple plugin to let you render a pixel font to emulate retro vibes.
+A simple plugin to let you render a pixel font to emulate retro vibes in your [Litecanvas](https://github.com/litecanvas/game-engine) projects.
 
 <!-- prettier-ignore -->
 > [!TIP]
