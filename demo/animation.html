@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+    user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0"
+    />
+    <title>Litecanvas Plugin</title>
+    <style type="text/css">
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://unpkg.com/litecanvas/dist/dist.js"></script>
+    <script src="../dist/dist.js"></script>
+    <script>
+      const e = litecanvas({
+        width: 128,
+        pixelart: true,
+        // animate: false,
+        // autoscale: false,
+      })
+
+      e.use(pluginPixelFont)
+
+      function draw() {
+        e.cls(0)
+
+        e.textfont(PIXEL_FONT_BASIC)
+
+        let size = 16
+        e.textsize(size)
+
+        let t = round(T * 8) % (126 - 32)
+        for (let i = 0; i < 128; i++) {
+          e.text(size * i, 56, String.fromCharCode(i + 28 + t))
+        }
+      }
+    </script>
+  </body>
+</html>

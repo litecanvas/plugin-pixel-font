@@ -1,0 +1,37 @@
+{
+  "name": "@litecanvas/plugin-pixel-font",
+  "version": "0.0.1",
+  "description": "Sometimes upgrading litecanvas to a new version can be a lot of work. This plugin makes this easier, by restoring the Litecanvas APIs that were removed in newer versions, and additionally shows warnings in the browser console when removed and/or deprecated APIs are used.",
+  "author": "Luiz Bills <luizbills@pm.me>",
+  "license": "MIT",
+  "homepage": "https://github.com/litecanvas/plugin-pixel-font",
+  "bugs": {
+    "url": "https://github.com/litecanvas/plugin-pixel-font/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/litecanvas/plugin-pixel-font.git#main"
+  },
+  "type": "module",
+  "main": "src/index.js",
+  "keywords": [
+    "litecanvas",
+    "pixel font",
+    "retro"
+  ],
+  "scripts": {
+    "dev": "esbuild src/web.js --bundle --watch --outfile=dist/dist.js --servedir=.",
+    "build": "esbuild src/web.js --bundle --minify --outfile=dist/dist.js"
+  },
+  "peerDependencies": {
+    "litecanvas": "latest"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.5"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "unpkg": "./dist/dist.js"
+}
