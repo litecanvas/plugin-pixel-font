@@ -24,7 +24,9 @@ or
 import litecanvas from 'litecanvas'
 import pluginPixelFont from '@litecanvas/plugin-pixel-font'
 
-litecanvas()
+litecanvas({
+  loop: { draw },
+})
 
 use(pluginPixelFont)
 
