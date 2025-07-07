@@ -3,7 +3,7 @@
 A simple plugin to let you render a pixel font to emulate retro vibes.
 
 <!-- prettier-ignore -->
-> [!INFO]
+> [!TIP]
 > **This plugin is automatically loaded on Litecanvas playground.**
 
 ## Install
