@@ -24,7 +24,7 @@
     "build": "esbuild src/web.js --bundle --minify --outfile=dist/dist.js"
   },
   "devDependencies": {
-    "esbuild": "^0.25.5"
+    "esbuild": "^0.25.6"
   },
   "peerDependencies": {
     "litecanvas": "latest"
