@@ -23,7 +23,7 @@ export default function plugin(engine, config = {}) {
 
   const setPixelFontAlign = () => {
     return console.warn(
-      'textalign() xxx has not yet been implemented for pixel font'
+      'textalign() has not yet been implemented for pixel font'
     )
   }
 
