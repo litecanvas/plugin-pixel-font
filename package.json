@@ -21,7 +21,8 @@
   ],
   "scripts": {
     "dev": "esbuild src/web.js --bundle --watch --outfile=dist/dist.js --servedir=.",
-    "build": "esbuild src/web.js --bundle --minify --outfile=dist/dist.js"
+    "build": "esbuild src/web.js --bundle --minify --outfile=dist/dist.js",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "esbuild": "^0.25.6"
