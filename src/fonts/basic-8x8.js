@@ -1,7 +1,7 @@
 // Based on https://github.com/dhepper/font8x8 by Marcel Sondaar | License: Public Domain
 
 //U+0021 - U+007E
-export const characters = [
+const characters = [
   // [, , , , , , , ], // U+0020 (space)
   [0x18, 0x3c, 0x3c, 0x18, 0x18, , 0x18], // U+0021 (!)
   [0x36, 0x36, , , , , ,], // U+0022 (")
@@ -98,3 +98,13 @@ export const characters = [
   [0x07, 0x0c, 0x0c, 0x38, 0x0c, 0x0c, 0x07], // U+007D (])
   [0x6e, 0x3b, , , , , ,], // U+007E (~)
 ]
+
+export const font = {
+  chars: characters,
+  // first char code
+  first: 33,
+  // width
+  w: 8,
+  // height (optional)
+  // h: 8,
+}
