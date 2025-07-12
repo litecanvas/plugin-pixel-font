@@ -10,6 +10,7 @@ export default function plugin(engine, config = {}) {
   const _core_text = engine.text
   const _core_textsize = engine.textsize
   const _core_textalign = engine.textalign
+  const _core_textfont = engine.textfont
 
   // constants
   const PIXEL_FONT_BASIC = { chars: characters, first: 33, size: 8 }
@@ -68,6 +69,7 @@ export default function plugin(engine, config = {}) {
       engine.def('textsize', _core_textsize)
       engine.def('textalign', _core_textalign)
       pixelFont = null
+      _core_textfont(font)
     }
   }
 
