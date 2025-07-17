@@ -10,25 +10,37 @@
     <title>Litecanvas Plugin</title>
     <style type="text/css">
       body {
+        font-family: sans-serif;
         margin: 0;
+        text-align: center;
       }
     </style>
   </head>
   <body>
+    <canvas></canvas>
+    <p>Tap to stop the animation</p>
+
     <script src="https://unpkg.com/litecanvas/dist/dist.js"></script>
-    <script src="../dist/dist.js"></script>
+    <script src="/dist/dist.js"></script>
     <script>
       const e = litecanvas({
+        canvas: 'canvas',
         width: 128,
         pixelart: true,
-        // animate: false,
-        // autoscale: false,
       })
 
       e.use(pluginPixelFont)
 
+      let stop = false
+
+      function tapped() {
+        stop = !stop
+      }
+
       function draw() {
         e.cls(0)
+
+        if (stop) return
 
         e.textfont(PIXEL_FONT_BASIC)
 

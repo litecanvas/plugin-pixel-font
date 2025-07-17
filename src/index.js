@@ -2,11 +2,12 @@ import 'litecanvas'
 import { font as defaultFont } from './fonts/basic-8x8.js'
 
 /**
- *
  * @param {LitecanvasInstance} engine
- * @param {*} config
+ * @param {object} config
+ * @param {boolean | number} config.cache
  */
-export default plugin = (engine) => {
+export default plugin = (engine, { cache = true } = {}) => {
+  // litecanvas core methods
   const _core_text = engine.text
   const _core_textsize = engine.textsize
   const _core_textalign = engine.textalign
@@ -15,10 +16,23 @@ export default plugin = (engine) => {
   // constants
   const PIXEL_FONT_BASIC = defaultFont
 
+  /** @type {Map<string, ImageBitmap} */
+  const cached = cache ? new Map() : null
+  let cacheExpiration = 5 * 60 // seconds
   let fontScale = 1
 
   /** @type {typeof defaultFont | null} */
   let pixelFont = null
+
+  if (DEBUG) {
+    if (cache) {
+      cacheExpiration = 5
+      console.log('[litecanvas/plugin-pixel-font] cache enabled!')
+      console.log(
+        '[litecanvas/plugin-pixel-font] cache expiration set to 5 seconds! (for test purposes)'
+      )
+    }
+  }
 
   /**
    * @param {number} value
@@ -29,28 +43,23 @@ export default plugin = (engine) => {
 
   const setPixelFontAlign = () => {
     return console.warn(
-      'textalign() has not yet been implemented for pixel font'
+      '[litecanvas/plugin-pixel-font] textalign() has not yet been implemented for pixel fonts'
     )
   }
 
   /**
-   * @param {number} px
-   * @param {number} py
-   * @param {string} char
+   * @param {number} posx
+   * @param {number} posy
+   * @param {(number|undefined)[]} bitmap
    * @param {number?} color
    */
-  const printPixelChar = (px, py, char, color = 3) => {
-    const charCode = char.charCodeAt()
-    const bitmap = pixelFont.chars[charCode - pixelFont.first]
-
-    if (!bitmap) return
-
+  const renderChar = (posx, posy, bitmap, color = 3) => {
     for (let y = 0; y < pixelFont.w; y++) {
       for (let x = 0; x < pixelFont.w; x++) {
         if ((bitmap[y] | 0) & (1 << x)) {
           engine.rectfill(
-            px + x * fontScale,
-            py + y * fontScale,
+            posx + x * fontScale,
+            posy + y * fontScale,
             fontScale,
             fontScale,
             color
@@ -66,21 +75,99 @@ export default plugin = (engine) => {
    * @param {string} str
    * @param {number?} color
    */
-  const renderPixelFont = (x, y, str, color = 3) => {
+  const renderPixelText = (x, y, str, color = 3) => {
     str += ''
+
+    if (!fontScale || !str.length) return
+
     const charSize = fontScale * pixelFont.w
+
     for (let i = 0; i < str.length; i++) {
-      printPixelChar(x, y, str[i], color)
+      const char = str[i]
+      const charCode = char.charCodeAt()
+      const bitmap = pixelFont.chars[charCode - pixelFont.first]
+
+      if (bitmap) {
+        if (cache) {
+          const key = `${pixelFont.id}:${char}:${~~color}:${charSize}`
+
+          // check the cache
+          if (!cached.has(key)) {
+            // create an char image and cache it
+            cached.set(
+              key,
+              engine.paint(charSize, charSize, () => {
+                renderChar(0, 0, bitmap, ~~color)
+              })
+            )
+          }
+          // get the cached char image
+          const img = cached.get(key)
+
+          // update the cache expiration time for this char
+          img._ = engine.T + cacheExpiration
+
+          // draw the char as image (better performance)
+          engine.image(x, y, img)
+        } else {
+          // with cached disabled, draw the char pixel by pixel
+          renderChar(x, y, bitmap, color)
+        }
+      }
+
       x += charSize
     }
   }
+
+  // check expired cached images
+  if (cache) {
+    const intervalId = setInterval(
+      () => {
+        if (DEBUG) {
+          console.log(
+            '[litecanvas/plugin-pixel-font] checking expired cache entries'
+          )
+        }
+        const t = performance.now()
+        for (const [key, bitmap] of cached) {
+          if (engine.T > bitmap._) {
+            cached.delete(key)
+            if (DEBUG) {
+              const [fontId, char, color, size] = key.split(':')
+              console.log(
+                '[litecanvas/plugin-pixel-font] cache cleared for',
+                JSON.stringify({ char, color, size, fontId })
+              )
+            }
+          }
+        }
+        if (DEBUG) {
+          console.log(
+            '[litecanvas/plugin-pixel-font] All entries checked in',
+            (performance.now() - t) / 1000,
+            'seconds'
+          )
+        }
+      },
+      // set the interval to 10 seconds in debug mode
+      // default = 1 minute
+      1000 * (DEBUG ? 10 : cacheExpiration / 5)
+    )
+
+    engine.listen('quit', () => {
+      clearInterval(intervalId)
+      cached.clear()
+    })
+  }
+
+  if (DEBUG) window._FONT_CACHE = cached
 
   /**
    * @param {string | typeof defaultFont} font
    */
   const textfont = (font) => {
     if ('object' === typeof font) {
-      engine.def('text', renderPixelFont)
+      engine.def('text', renderPixelText)
       engine.def('textsize', setPixelFontScale)
       engine.def('textalign', setPixelFontAlign)
       pixelFont = font
@@ -89,7 +176,6 @@ export default plugin = (engine) => {
       engine.def('text', _core_text)
       engine.def('textsize', _core_textsize)
       engine.def('textalign', _core_textalign)
-      pixelFont = null
       _core_textfont(font)
     }
   }

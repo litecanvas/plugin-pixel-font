@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+    user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0"
+    />
+    <title>Litecanvas Plugin</title>
+    <style type="text/css">
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <p style="margin-top: 1em">
+      See how the FPS drops when the <strong>cache</strong> option is
+      disabled...
+    </p>
+
+    <script src="https://unpkg.com/@litecanvas/plugin-frame-rate-meter/dist/dist.js"></script>
+    <script src="https://unpkg.com/litecanvas/dist/dist.js"></script>
+    <script src="/dist/dist.js"></script>
+    <script>
+      let cols = 40,
+        rows = 1,
+        rowsMax = 30,
+        size = 8
+
+      litecanvas({
+        canvas: 'canvas',
+        width: cols * size,
+        height: rowsMax * size,
+        autoscale: 2,
+      })
+
+      use(pluginPixelFont, {
+        cache: false,
+      })
+      use(pluginFrameRateMeter)
+
+      function update(dt) {
+        // add 5 rows per second
+        rows += 2 * dt
+        rows = min(rowsMax, rows)
+      }
+
+      function draw() {
+        cls(0)
+
+        textfont(PIXEL_FONT_BASIC)
+        textsize(size)
+
+        for (let y = 0; y < round(rows); y++) {
+          for (let x = 0; x < cols; x++) {
+            text(x * size, y * size, 'Z', 3)
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
