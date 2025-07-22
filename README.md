@@ -33,8 +33,11 @@ use(pluginPixelFont)
 function draw() {
   cls(0)
 
-  // activate the pixel font
+  // activate the default pixel font 8x8
   textfont(PIXEL_FONT_BASIC)
+
+  // activate the mini pixel font 4x6
+  // textfont(PIXEL_FONT_MINI)
 
   // set the text size
   textsize(16)

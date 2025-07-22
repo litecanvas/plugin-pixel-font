@@ -1,5 +1,6 @@
 import 'litecanvas'
 import { font as defaultFont } from './fonts/basic-8x8.js'
+import { font as miniFont } from './fonts/mini-4x6.js'
 
 /**
  * @param {LitecanvasInstance} engine
@@ -15,6 +16,7 @@ export default plugin = (engine, { cache = true } = {}) => {
 
   // constants
   const PIXEL_FONT_BASIC = defaultFont
+  const PIXEL_FONT_MINI = miniFont
 
   /** @type {Map<string, ImageBitmap} */
   const cached = cache ? new Map() : null
@@ -22,7 +24,7 @@ export default plugin = (engine, { cache = true } = {}) => {
   let fontScale = 1
 
   /** @type {typeof defaultFont | null} */
-  let pixelFont = null
+  let currentFont = null
 
   if (DEBUG) {
     if (cache) {
@@ -38,7 +40,7 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {number} value
    */
   const setPixelFontScale = (value) => {
-    fontScale = Math.round(value / pixelFont.w)
+    fontScale = ~~Math.round(value)
   }
 
   const setPixelFontAlign = () => {
@@ -54,8 +56,9 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {number?} color
    */
   const renderChar = (posx, posy, bitmap, color = 3) => {
-    for (let y = 0; y < pixelFont.w; y++) {
-      for (let x = 0; x < pixelFont.w; x++) {
+    const h = currentFont.h || currentFont.w
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < currentFont.w; x++) {
         if ((bitmap[y] | 0) & (1 << x)) {
           engine.rectfill(
             posx + x * fontScale,
@@ -80,23 +83,24 @@ export default plugin = (engine, { cache = true } = {}) => {
 
     if (!fontScale || !str.length) return
 
-    const charSize = fontScale * pixelFont.w
+    const charWidth = fontScale * currentFont.w
+    const charHeight = fontScale * (currentFont.h || currentFont.w)
 
     for (let i = 0; i < str.length; i++) {
       const char = str[i]
       const charCode = char.charCodeAt()
-      const bitmap = pixelFont.chars[charCode - pixelFont.first]
+      const bitmap = currentFont.chars[charCode - currentFont.first]
 
       if (bitmap) {
         if (cache) {
-          const key = `${pixelFont.id}:${char}:${~~color}:${charSize}`
+          const key = `${currentFont.id}:${char}:${~~color}:${charWidth}`
 
           // check the cache
           if (!cached.has(key)) {
             // create an char image and cache it
             cached.set(
               key,
-              engine.paint(charSize, charSize, () => {
+              engine.paint(charWidth, charHeight, () => {
                 renderChar(0, 0, bitmap, ~~color)
               })
             )
@@ -115,7 +119,7 @@ export default plugin = (engine, { cache = true } = {}) => {
         }
       }
 
-      x += charSize
+      x += charWidth
     }
   }
 
@@ -123,11 +127,6 @@ export default plugin = (engine, { cache = true } = {}) => {
   if (cache) {
     const intervalId = setInterval(
       () => {
-        if (DEBUG) {
-          console.log(
-            '[litecanvas/plugin-pixel-font] checking expired cache entries'
-          )
-        }
         const t = performance.now()
         for (const [key, bitmap] of cached) {
           if (engine.T > bitmap._) {
@@ -140,13 +139,6 @@ export default plugin = (engine, { cache = true } = {}) => {
               )
             }
           }
-        }
-        if (DEBUG) {
-          console.log(
-            '[litecanvas/plugin-pixel-font] All entries checked in',
-            (performance.now() - t) / 1000,
-            'seconds'
-          )
         }
       },
       // set the interval to 10 seconds in debug mode
@@ -170,8 +162,8 @@ export default plugin = (engine, { cache = true } = {}) => {
       engine.def('text', renderPixelText)
       engine.def('textsize', setPixelFontScale)
       engine.def('textalign', setPixelFontAlign)
-      pixelFont = font
-      setPixelFontScale(pixelFont.w)
+      currentFont = font
+      setPixelFontScale(fontScale || 1)
     } else {
       engine.def('text', _core_text)
       engine.def('textsize', _core_textsize)
@@ -182,6 +174,7 @@ export default plugin = (engine, { cache = true } = {}) => {
 
   return {
     PIXEL_FONT_BASIC,
+    PIXEL_FONT_MINI,
     textfont,
   }
 }
