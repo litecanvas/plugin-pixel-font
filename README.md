@@ -36,7 +36,7 @@ function draw() {
   // activate the default pixel font 8x8
   textfont(PIXEL_FONT_BASIC)
 
-  // activate the mini pixel font 4x6
+  // or activate the mini pixel font 4x6
   // textfont(PIXEL_FONT_MINI)
 
   // set the text size
@@ -51,20 +51,28 @@ function draw() {
 }
 ```
 
-[See this example on playground](https://litecanvas.js.org?c=eJxNjssKwjAQRff9itk1BUVd6F5FURAVFHQnsZ1iICQyGa0P%2FHcntQVhFhfm3Ic1jLl2dx3U%2B5MlSXlzORvvoCBdqQzeCUBug%2BpnIuR6PdAC3DUj8AXhah5oofSO5cn44CjVdnmcrU7zzXp%2Fmox3y6kE19aAXLsiCMG8sDFFqQajFnO%2BAkJXIMHT3%2BhXIo1FDTce1e%2BAXLpAaz0cPNkibQMI26Y4p8lC%2Bp%2BYBu1CNyCZMs3%2BIocxcx%2F3VYYvcCZfCVTnCPf5ApPaX2E%3D)
+[See this example on playground](https://litecanvas.js.org?c=eJxtj8FqwzAMhu95Ct3iQEdb6Eqv29hYYGsHLWy34sUKNXh2kZUmW%2Bm7z3YayGCggwSfvl8ymrGS9iS9OF%2BKLKsbW7F2FhTJVhRwzgAq48WsCE2o6RRkAE6SEfiAoLCWjWE46g4N1M4yrLpVABk7jqN4Kz8eX%2FZPm%2FVuf3%2B3LR9CSNI4%2Bmv60laPNYtu2YP%2FmV7LdTmIPHISRA68%2FsFremzFfDlg1rVAaBUSfLuG%2BqgQrhJ83RGzCYTKn9EYB%2B%2BOjMoHAeGQlO7rXUjjX3Mvrb%2FxSLrOi5HyNjp38b5W8wE%2BybUBSp7AXX4B2w56FA%3D%3D)
 
 ## API
 
-### `text(x: number, y: number, str: string, color?: number): void`
+### `function text(x: number, y: number, str: string, color?: number): void`
 
 Draw a pixelated text in the position (x, y) using color white (3) by default.
 
 > Note: The `text()` 5th param for text style (bold, italic, etc) is disabled in the pixel font.
 
-### `textsize(value: number): void`
+### `function textsize(value: number): void`
 
 Sets the text **scale** (not the size). E.g.: `textsize(3)` scales the pixel font in 3x or 300%.
 
-### PIXEL_FONT_BASIC
+### `const PIXEL_FONT_BASIC`
 
-The constant that contains information about the pixel font. Use it as a font family to activate the plugin.
+The variable that contains information about the pixel font 8x8. Use it as a font family to activate the plugin.
+
+![](images/font8x8.png)
+
+### `const PIXEL_FONT_MINI`
+
+The variable that contains information about the pixel font 4x6. Use it as a font family to activate the plugin.
+
+![](images/font4x6.png)
