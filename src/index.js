@@ -1,6 +1,6 @@
 import 'litecanvas'
 import { font as defaultFont } from './fonts/basic-8x8.js'
-import { font as miniFont } from './fonts/mini-3x5.js'
+import { font as miniFont } from './fonts/mini-4x6.js'
 
 /**
  * @param {LitecanvasInstance} engine
@@ -40,7 +40,7 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {number} value
    */
   const setPixelFontScale = (value) => {
-    fontScale = Math.round(value / currentFont.w)
+    fontScale = ~~Math.round(value)
   }
 
   const setPixelFontAlign = () => {
@@ -127,11 +127,6 @@ export default plugin = (engine, { cache = true } = {}) => {
   if (cache) {
     const intervalId = setInterval(
       () => {
-        if (DEBUG) {
-          console.log(
-            '[litecanvas/plugin-pixel-font] checking expired cache entries'
-          )
-        }
         const t = performance.now()
         for (const [key, bitmap] of cached) {
           if (engine.T > bitmap._) {
@@ -144,13 +139,6 @@ export default plugin = (engine, { cache = true } = {}) => {
               )
             }
           }
-        }
-        if (DEBUG) {
-          console.log(
-            '[litecanvas/plugin-pixel-font] All entries checked in',
-            (performance.now() - t) / 1000,
-            'seconds'
-          )
         }
       },
       // set the interval to 10 seconds in debug mode
@@ -175,7 +163,7 @@ export default plugin = (engine, { cache = true } = {}) => {
       engine.def('textsize', setPixelFontScale)
       engine.def('textalign', setPixelFontAlign)
       currentFont = font
-      setPixelFontScale(currentFont.w)
+      setPixelFontScale(fontScale || 1)
     } else {
       engine.def('text', _core_text)
       engine.def('textsize', _core_textsize)
