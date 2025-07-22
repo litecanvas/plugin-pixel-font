@@ -63,7 +63,7 @@ Draw a pixelated text in the position (x, y) using color white (3) by default.
 
 ### `textsize(value: number): void`
 
-Sets the text size. Prefer multiples of 8, so 8, 16, 24, 32, etc.
+Sets the text **scale** (not the size). E.g.: `textsize(3)` scales the pixel font in 3x or 300%.
 
 ### PIXEL_FONT_BASIC
 
