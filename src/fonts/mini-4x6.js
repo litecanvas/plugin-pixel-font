@@ -1,4 +1,4 @@
-// Based on https://github.com/dhepper/font8x8 by Marcel Sondaar | License: Public Domain
+// Based on https://github.com/luizbills/font4x6 by Luiz Bills | License: Public Domain
 
 const characters = [
   // [], // U+0020 (space)
