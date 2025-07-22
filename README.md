@@ -39,8 +39,8 @@ function draw() {
   // or activate the mini pixel font 4x6
   // textfont(PIXEL_FONT_MINI)
 
-  // set the text size
-  textsize(16)
+  // set the text pixel scale to 300%
+  textsize(3)
 
   // now render your pixelated text
   text(0, 0, 'Hello World')
@@ -51,7 +51,7 @@ function draw() {
 }
 ```
 
-[See this example on playground](https://litecanvas.js.org?c=eJxtj8FqwzAMhu95Ct3iQEdb6Eqv29hYYGsHLWy34sUKNXh2kZUmW%2Bm7z3YayGCggwSfvl8ymrGS9iS9OF%2BKLKsbW7F2FhTJVhRwzgAq48WsCE2o6RRkAE6SEfiAoLCWjWE46g4N1M4yrLpVABk7jqN4Kz8eX%2FZPm%2FVuf3%2B3LR9CSNI4%2Bmv60laPNYtu2YP%2FmV7LdTmIPHISRA68%2FsFremzFfDlg1rVAaBUSfLuG%2BqgQrhJ83RGzCYTKn9EYB%2B%2BOjMoHAeGQlO7rXUjjX3Mvrb%2FxSLrOi5HyNjp38b5W8wE%2BybUBSp7AXX4B2w56FA%3D%3D)
+[See this example on playground](https://litecanvas.js.org?c=eJxtj8FqwzAMhu95Ct3iwEYL3UavW2lpYOsGK2y34sUKNbj2kJUmW%2Bm7z3YayKCggwSfvl8ymrGS9ii9OJ2LLKsbW7F2FhTJVhRwygAq48W0CE2oyQRkAI6SEXiPoLCWjWH41h0aqJ1lmHfzADJ2HEfxVn4un3er18129%2FT4Xi5CSNI4%2Bm86aKvHmrvuoQevmV7KTTmIPHISRA68%2FsVLemzFbKCsa4HQKiT4cQ31SSFbJfayIqY3ECpfozEOPhwZlQ8CwiEonde7kMav5l5af%2BuRdJ0XI%2BV9dG7jea3mPXyRawOUPIE7%2FwFzJ3ng)
 
 ## API
 
