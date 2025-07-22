@@ -42,14 +42,15 @@
 
         if (stop) return
 
-        e.textfont(PIXEL_FONT_BASIC)
+        const font = PIXEL_FONT_BASIC
+        e.textfont(font)
 
         let size = 2
         e.textsize(size)
 
         let t = round(T * 8) % (126 - 32)
         for (let i = 0; i < 128; i++) {
-          e.text(size * i, 56, String.fromCharCode(i + 28 + t))
+          e.text(font.w * size * i, 56, String.fromCharCode(i + 28 + t))
         }
       }
     </script>

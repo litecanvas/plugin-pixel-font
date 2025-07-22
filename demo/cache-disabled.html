@@ -29,7 +29,7 @@
     <script>
       let cols = 40,
         rows = 1,
-        rowsMax = 30,
+        rowsMax = 40,
         size = 8
 
       litecanvas({
@@ -37,6 +37,7 @@
         width: cols * size,
         height: rowsMax * size,
         autoscale: 2,
+        pixelart: true,
       })
 
       use(pluginPixelFont, {
@@ -46,19 +47,20 @@
 
       function update(dt) {
         // add 5 rows per second
-        rows += 2 * dt
+        rows += 5 * dt
         rows = min(rowsMax, rows)
       }
 
       function draw() {
         cls(0)
 
-        textfont(PIXEL_FONT_BASIC)
-        textsize(size)
+        const font = PIXEL_FONT_MINI
+        textfont(font)
+        textsize(1)
 
         for (let y = 0; y < round(rows); y++) {
           for (let x = 0; x < cols; x++) {
-            text(x * size, y * size, 'Z', 3)
+            text(x * font.w, y * font.h, 'Z', 3)
           }
         }
       }
