@@ -26,7 +26,7 @@ export default plugin = (engine, { cache = true } = {}) => {
   /** @type {typeof defaultFont | null} */
   let currentFont = null
 
-  if (DEBUG) {
+  DEV: {
     if (cache) {
       cacheExpiration = 5
       console.log('[litecanvas/plugin-pixel-font] cache enabled!')
@@ -125,34 +125,33 @@ export default plugin = (engine, { cache = true } = {}) => {
 
   // check expired cached images
   if (cache) {
-    const intervalId = setInterval(
-      () => {
-        const t = performance.now()
-        for (const [key, bitmap] of cached) {
-          if (engine.T > bitmap._) {
-            cached.delete(key)
-            if (DEBUG) {
-              const [fontId, char, color, size] = key.split(':')
-              console.log(
-                '[litecanvas/plugin-pixel-font] cache cleared for',
-                JSON.stringify({ char, color, size, fontId })
-              )
-            }
+    // default interval is 1 minute
+    let intervalTime = 60 * 1000
+
+    // reduce the interval to 10 seconds in dev mode
+    DEV: intervalTime = 10 * 1000
+
+    const intervalId = setInterval(() => {
+      const t = performance.now()
+      for (const [key, bitmap] of cached) {
+        if (engine.T > bitmap._) {
+          cached.delete(key)
+          DEV: {
+            const [fontId, char, color, size] = key.split(':')
+            console.log(
+              '[litecanvas/plugin-pixel-font] cache cleared for',
+              JSON.stringify({ char, color, size, fontId })
+            )
           }
         }
-      },
-      // set the interval to 10 seconds in debug mode
-      // default = 1 minute
-      1000 * (DEBUG ? 10 : cacheExpiration / 5)
-    )
+      }
+    }, intervalTime)
 
     engine.listen('quit', () => {
       clearInterval(intervalId)
       cached.clear()
     })
   }
-
-  if (DEBUG) window._FONT_CACHE = cached
 
   /**
    * @param {string | typeof defaultFont} font
