@@ -51,25 +51,17 @@ export default plugin = (engine, { cache = true } = {}) => {
 
   /**
    * @param {number} posx
+   * @param {number} posx
    * @param {number} posy
    * @param {(number|undefined)[]} bitmap
    * @param {number?} color
    */
-  const renderChar = (posx, posy, bitmap, color = 3) => {
-    const h = currentFont.h || currentFont.w
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < currentFont.w; x++) {
-        if ((bitmap[y] | 0) & (1 << x)) {
-          engine.rectfill(
-            posx + x * fontScale,
-            posy + y * fontScale,
-            fontScale,
-            fontScale,
-            color
-          )
-        }
-      }
-    }
+  const renderChar = (posx, posy, bitmapChar, color = 3) => {
+    engine.push()
+    engine.translate(posx, posy)
+    engine.scale(fontScale)
+    currentFont.render(engine, bitmapChar, color)
+    engine.pop()
   }
 
   /**
