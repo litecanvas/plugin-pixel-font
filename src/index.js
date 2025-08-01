@@ -1,6 +1,17 @@
 import 'litecanvas'
-import { font as defaultFont } from './fonts/basic-8x8.js'
-import { font as miniFont } from './fonts/mini-4x6.js'
+
+export { font as PIXEL_FONT_BASIC } from './fonts/basic-8x8.js'
+export { font as PIXEL_FONT_MINI } from './fonts/mini-4x6.js'
+
+/**
+ * @typedef {object} LitecanvasPixelFont
+ * @property {string} id The font name (must be unique)
+ * @property {any[]}  chars The list of font glyphs
+ * @property {number} first The first font glyph code
+ * @property {number} w The width of each glyph
+ * @property {number} h The height of each glyph
+ * @property {(engine: LitecanvasInstance, bitmap: any, color?: number) => void} render The font fglyph renderer
+ */
 
 /**
  * @param {LitecanvasInstance} engine
@@ -14,16 +25,12 @@ export default plugin = (engine, { cache = true } = {}) => {
   const _core_textalign = engine.textalign
   const _core_textfont = engine.textfont
 
-  // constants
-  const PIXEL_FONT_BASIC = defaultFont
-  const PIXEL_FONT_MINI = miniFont
-
   /** @type {Map<string, ImageBitmap} */
   const cached = cache ? new Map() : null
   let cacheExpiration = 5 * 60 // seconds
   let fontScale = 1
 
-  /** @type {typeof defaultFont | null} */
+  /** @type {LitecanvasPixelFont | null} */
   let currentFont = null
 
   DEV: {
@@ -164,8 +171,6 @@ export default plugin = (engine, { cache = true } = {}) => {
   }
 
   return {
-    PIXEL_FONT_BASIC,
-    PIXEL_FONT_MINI,
     textfont,
   }
 }
