@@ -108,9 +108,7 @@ const render = (engine, bitmap, color = 3) => {
   for (y = 0; y < 6; y++) {
     for (x = 0; x < 4; x++) {
       const i = ~~(y / 2)
-      const set = y % 2 ? bitmap[i] & 0x0f : bitmap[i] >> 4
-      if (set & (1 << x)) {
-        console.log(x, y)
+      if ((y % 2 ? bitmap[i] & 0x0f : bitmap[i] >> 4) & (1 << x)) {
         engine.rectfill(x, y, 1, 1, color)
       }
     }
