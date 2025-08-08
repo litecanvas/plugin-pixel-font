@@ -27,7 +27,6 @@ export default plugin = (engine, { cache = true } = {}) => {
 
   /** @type {Map<string, ImageBitmap} */
   const cached = cache ? new Map() : null
-  let cacheExpiration = 5 * 60 // seconds
   let fontScale = 1
 
   /** @type {LitecanvasPixelFont | null} */
@@ -107,9 +106,6 @@ export default plugin = (engine, { cache = true } = {}) => {
           // get the cached char image
           const img = cached.get(key)
 
-          // update the cache expiration time for this char
-          img._ = engine.T + cacheExpiration
-
           // draw the char as image (better performance)
           engine.image(x, y, img)
         } else {
@@ -122,33 +118,35 @@ export default plugin = (engine, { cache = true } = {}) => {
     }
   }
 
-  // check expired cached images
   if (cache) {
-    // default interval is 1 minute
+    // clear the cache every 1 minute
     let intervalTime = 60 * 1000
 
-    // reduce the interval to 10 seconds in dev mode
+    // reduce this interval to 10 seconds in dev build
     DEV: intervalTime = 10 * 1000
 
     const intervalId = setInterval(() => {
-      const t = performance.now()
-      for (const [key, bitmap] of cached) {
-        if (engine.T > bitmap._) {
-          cached.delete(key)
-          DEV: {
-            const [fontId, char, color, size] = key.split(':')
-            console.log(
-              '[litecanvas/plugin-pixel-font] cache cleared for',
-              JSON.stringify({ char, color, size, fontId })
-            )
-          }
-        }
-      }
+      cached.clear()
+      DEV: console.log('[litecanvas/plugin-pixel-font] cache cleared')
     }, intervalTime)
 
     engine.listen('quit', () => {
       clearInterval(intervalId)
       cached.clear()
+    })
+
+    // clear the cache when palc() is called
+    const _core_palc = engine.palc
+    engine.def('palc', (a, b) => {
+      cached.clear()
+      return _core_palc(a, b)
+    })
+
+    // also clear the cache pal() is called
+    const _core_pal = engine.pal
+    engine.def('pal', (colors) => {
+      cached.clear()
+      return _core_pal(colors)
     })
   }
 
