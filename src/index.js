@@ -77,6 +77,11 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {number?} color
    */
   const renderPixelText = (x, y, str, color = 3) => {
+    // check if stat(12) exists
+    if (null == engine.stat(12)) {
+      throw `renderPixelText requires Litecanvas v0.99 or later`
+    }
+
     str += ''
 
     if (!fontScale || !str.length) return
@@ -91,7 +96,13 @@ export default plugin = (engine, { cache = true } = {}) => {
 
       if (bitmap) {
         if (cache) {
-          const key = `${currentFont.id}:${char}:${~~color}:${charWidth}`
+          const key = [
+            currentFont.id,
+            char,
+            ~~color,
+            charWidth,
+            engine.stat(12).join(','),
+          ].join(':')
 
           // check the cache
           if (!cached.has(key)) {
@@ -135,14 +146,7 @@ export default plugin = (engine, { cache = true } = {}) => {
       cached.clear()
     })
 
-    // clear the cache when palc() is called
-    const _core_palc = engine.palc
-    engine.def('palc', (a, b) => {
-      cached.clear()
-      return _core_palc(a, b)
-    })
-
-    // also clear the cache pal() is called
+    // also clear the cache when pal() is called
     const _core_pal = engine.pal
     engine.def('pal', (colors) => {
       cached.clear()
