@@ -19,6 +19,11 @@ export { font as PIXEL_FONT_MINI } from './fonts/mini-4x6.js'
  * @param {boolean | number} config.cache
  */
 export default plugin = (engine, { cache = true } = {}) => {
+  // check if stat(12) exists
+  if (null == engine.stat(12)) {
+    throw `Plugin Pixel Font requires Litecanvas v0.99 or later`
+  }
+
   // litecanvas core methods
   const _core_text = engine.text
   const _core_textsize = engine.textsize
@@ -77,11 +82,6 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {number?} color
    */
   const renderPixelText = (x, y, str, color = 3) => {
-    // check if stat(12) exists
-    if (null == engine.stat(12)) {
-      throw `renderPixelText requires Litecanvas v0.99 or later`
-    }
-
     str += ''
 
     if (!fontScale || !str.length) return
