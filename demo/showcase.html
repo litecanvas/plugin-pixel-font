@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+    user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0"
+    />
+    <title>Litecanvas Plugin</title>
+    <style type="text/css">
+      body {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+
+    <div class="fonts">
+      <a href="?f=basic">basic</a>
+      <a href="?f=mini">mini</a>
+      <a href="?f=monogram">monogram</a>
+    </div>
+
+    <script src="https://unpkg.com/litecanvas/dist/dist.js"></script>
+    <script src="/dist/dist.js"></script>
+    <script>
+      let url = new URL(location)
+      let size = 2
+      let fonts = {
+        basic: PIXEL_FONT_BASIC,
+        mini: PIXEL_FONT_MINI,
+        monogram: PIXEL_FONT_MONOGRAM,
+      }
+      let fontName = url.searchParams.get('f')
+      let font = fontName in fonts ? fonts[fontName] : fonts['basic']
+      let phrase = 'The quick brown fox jumps over the lazy dog '
+      let margin = size * font.h
+
+      litecanvas({
+        width: margin * 2 + phrase.length * size * font.w,
+        height: margin * 3 + 2 * size * font.h,
+        animate: false,
+        autoscale: 0,
+        canvas: 'canvas',
+      })
+
+      canvas().oncontextmenu = null
+
+      use(pluginPixelFont)
+
+      pal(['#000', '#fff'])
+
+      function draw() {
+        cls(0)
+        let color = 1
+
+        textfont(font)
+        textsize(size)
+
+        text(margin, margin, phrase.trim() + '?', color)
+
+        text(margin, margin * 3, phrase.trim().toLocaleUpperCase() + '!', color)
+      }
+    </script>
+  </body>
+</html>

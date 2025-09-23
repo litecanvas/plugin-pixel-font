@@ -18,7 +18,7 @@
     <script src="https://unpkg.com/litecanvas/dist/dist.js"></script>
     <script src="/dist/dist.js"></script>
     <script>
-      let size = 1
+      let size = 2
       let font = PIXEL_FONT_MONOGRAM
 
       litecanvas({
@@ -26,7 +26,7 @@
         height: 6 * size * font.h,
         pixelart: true,
         animate: false,
-        autoscale: 4, // max zoom 4x
+        autoscale: 0, // max zoom 4x
       })
 
       use(pluginPixelFont)

@@ -79,3 +79,9 @@ The variable that contains information about the pixel font 8x8. Use it as a fon
 The variable that contains information about the pixel font 4x6. Use it as a font family to activate the plugin.
 
 ![](images/font4x6.png)
+
+### `const PIXEL_FONT_MONOGRAM`
+
+The variable that contains information about the monogram font 6x9. Use it as a font family to activate the plugin.
+
+![](images/font_monogram.png)
