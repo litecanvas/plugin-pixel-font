@@ -19,10 +19,11 @@
     <script src="/dist/dist.js"></script>
     <script>
       let size = 1
+      let font = PIXEL_FONT_MONOGRAM
 
       litecanvas({
-        width: 46 * size * 4,
-        height: 7 * size * 6,
+        width: 16 * size * font.w,
+        height: 6 * size * font.h,
         pixelart: true,
         animate: false,
         autoscale: 4, // max zoom 4x
@@ -33,28 +34,18 @@
       pal(['#000', '#fff'])
 
       function draw() {
-        cls(0)
-        let color = 1
+        cls(1)
+        let color = 0
 
-        let font = PIXEL_FONT_MINI
         textfont(font)
-
         textsize(size)
 
-        const showcaseOffset = 5
-
-        text(5, showcaseOffset, 'the quick, brown fox jumps over the lazy dog')
-        text(
-          5,
-          showcaseOffset + font.h * 2,
-          'the quick brown fox jumps over the lazy dog'.toUpperCase()
-        )
-
-        text(
-          5,
-          showcaseOffset + font.h * 4,
-          '0123456789 !"#$%&\'()*+,-./:;<=>?[\\]^_{|}~'
-        )
+        text(0, 0, ' !"#$%&\'()*+,-./', color)
+        text(0, size * font.h, '0123456789:;<=>?', color)
+        text(0, size * font.h * 2, '@ABCDEFGHIJKLMNO', color)
+        text(0, size * font.h * 3, 'PQRSTUVWXYZ[\\]^_', color)
+        text(0, size * font.h * 4, '`abcdefghijklmno', color)
+        text(0, size * font.h * 5, 'pqrstuvwxyz{|}~ ', color)
       }
     </script>
   </body>

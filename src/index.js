@@ -2,6 +2,7 @@ import 'litecanvas'
 
 export { font as PIXEL_FONT_BASIC } from './fonts/basic-8x8.js'
 export { font as PIXEL_FONT_MINI } from './fonts/mini-4x6.js'
+export { font as PIXEL_FONT_MONOGRAM } from './fonts/monogram-6x9.js'
 
 /**
  * @typedef {object} LitecanvasPixelFont
