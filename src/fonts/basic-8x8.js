@@ -99,13 +99,30 @@ const characters = [
   // [], // U+007F
 ]
 
+/**
+ * @param {LitecanvasInstance} engine
+ * @param {(number|undefined)[]} bitmap
+ * @param {number?} color
+ */
+const basicRenderer = (engine, bitmap, color = 3) => {
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      if ((bitmap[y] | 0) & (1 << x)) {
+        engine.rectfill(x, y, 1, 1, color)
+      }
+    }
+  }
+}
+
 export const font = {
   id: 'basic',
   chars: characters,
   // first char code
   first: 33,
-  // width
+  // char width
   w: 8,
-  // height
+  // char height
   h: 8,
+  // char renderer
+  render: basicRenderer,
 }

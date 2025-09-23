@@ -1,6 +1,17 @@
 import 'litecanvas'
-import { font as defaultFont } from './fonts/basic-8x8.js'
-import { font as miniFont } from './fonts/mini-4x6.js'
+
+export { font as PIXEL_FONT_BASIC } from './fonts/basic-8x8.js'
+export { font as PIXEL_FONT_MINI } from './fonts/mini-4x6.js'
+
+/**
+ * @typedef {object} LitecanvasPixelFont
+ * @property {string} id The font name (must be unique)
+ * @property {any[]}  chars The list of font glyphs
+ * @property {number} first The first font glyph code
+ * @property {number} w The width of each glyph
+ * @property {number} h The height of each glyph
+ * @property {(engine: LitecanvasInstance, bitmap: any, color?: number) => void} render The font fglyph renderer
+ */
 
 /**
  * @param {LitecanvasInstance} engine
@@ -8,22 +19,22 @@ import { font as miniFont } from './fonts/mini-4x6.js'
  * @param {boolean | number} config.cache
  */
 export default plugin = (engine, { cache = true } = {}) => {
+  // check if stat(12) exists
+  if (null == engine.stat(12)) {
+    throw `Plugin Pixel Font requires Litecanvas v0.99 or later`
+  }
+
   // litecanvas core methods
   const _core_text = engine.text
   const _core_textsize = engine.textsize
   const _core_textalign = engine.textalign
   const _core_textfont = engine.textfont
 
-  // constants
-  const PIXEL_FONT_BASIC = defaultFont
-  const PIXEL_FONT_MINI = miniFont
-
   /** @type {Map<string, ImageBitmap} */
   const cached = cache ? new Map() : null
-  let cacheExpiration = 5 * 60 // seconds
   let fontScale = 1
 
-  /** @type {typeof defaultFont | null} */
+  /** @type {LitecanvasPixelFont | null} */
   let currentFont = null
 
   DEV: {
@@ -51,25 +62,17 @@ export default plugin = (engine, { cache = true } = {}) => {
 
   /**
    * @param {number} posx
+   * @param {number} posx
    * @param {number} posy
    * @param {(number|undefined)[]} bitmap
    * @param {number?} color
    */
-  const renderChar = (posx, posy, bitmap, color = 3) => {
-    const h = currentFont.h || currentFont.w
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < currentFont.w; x++) {
-        if ((bitmap[y] | 0) & (1 << x)) {
-          engine.rectfill(
-            posx + x * fontScale,
-            posy + y * fontScale,
-            fontScale,
-            fontScale,
-            color
-          )
-        }
-      }
-    }
+  const renderChar = (posx, posy, bitmapChar, color = 3) => {
+    engine.push()
+    engine.translate(posx, posy)
+    engine.scale(fontScale)
+    currentFont.render(engine, bitmapChar, color)
+    engine.pop()
   }
 
   /**
@@ -93,7 +96,13 @@ export default plugin = (engine, { cache = true } = {}) => {
 
       if (bitmap) {
         if (cache) {
-          const key = `${currentFont.id}:${char}:${~~color}:${charWidth}`
+          const key = [
+            currentFont.id,
+            char,
+            ~~color,
+            charWidth,
+            engine.stat(12).join(','),
+          ].join(':')
 
           // check the cache
           if (!cached.has(key)) {
@@ -108,9 +117,6 @@ export default plugin = (engine, { cache = true } = {}) => {
           // get the cached char image
           const img = cached.get(key)
 
-          // update the cache expiration time for this char
-          img._ = engine.T + cacheExpiration
-
           // draw the char as image (better performance)
           engine.image(x, y, img)
         } else {
@@ -123,33 +129,28 @@ export default plugin = (engine, { cache = true } = {}) => {
     }
   }
 
-  // check expired cached images
   if (cache) {
-    // default interval is 1 minute
+    // clear the cache every 1 minute
     let intervalTime = 60 * 1000
 
-    // reduce the interval to 10 seconds in dev mode
+    // reduce this interval to 10 seconds in dev build
     DEV: intervalTime = 10 * 1000
 
     const intervalId = setInterval(() => {
-      const t = performance.now()
-      for (const [key, bitmap] of cached) {
-        if (engine.T > bitmap._) {
-          cached.delete(key)
-          DEV: {
-            const [fontId, char, color, size] = key.split(':')
-            console.log(
-              '[litecanvas/plugin-pixel-font] cache cleared for',
-              JSON.stringify({ char, color, size, fontId })
-            )
-          }
-        }
-      }
+      cached.clear()
+      DEV: console.log('[litecanvas/plugin-pixel-font] cache cleared')
     }, intervalTime)
 
     engine.listen('quit', () => {
       clearInterval(intervalId)
       cached.clear()
+    })
+
+    // also clear the cache when pal() is called
+    const _core_pal = engine.pal
+    engine.def('pal', (colors) => {
+      cached.clear()
+      return _core_pal(colors)
     })
   }
 
@@ -172,8 +173,6 @@ export default plugin = (engine, { cache = true } = {}) => {
   }
 
   return {
-    PIXEL_FONT_BASIC,
-    PIXEL_FONT_MINI,
     textfont,
   }
 }

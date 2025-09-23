@@ -22,7 +22,10 @@ or
 
 ```js
 import litecanvas from 'litecanvas'
-import pluginPixelFont from '@litecanvas/plugin-pixel-font'
+import pluginPixelFont, {
+  PIXEL_FONT_BASIC,
+  PIXEL_FONT_MINI,
+} from '@litecanvas/plugin-pixel-font'
 
 litecanvas({
   loop: { draw },

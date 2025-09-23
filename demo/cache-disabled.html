@@ -30,7 +30,8 @@
       let cols = 40,
         rows = 1,
         rowsMax = 40,
-        size = 8
+        size = 8,
+        color = 3
 
       litecanvas({
         canvas: 'canvas',
@@ -41,6 +42,7 @@
       })
 
       use(pluginPixelFont, {
+        // comment this line to enable the cache
         cache: false,
       })
       use(pluginFrameRateMeter)
@@ -49,18 +51,22 @@
         // add 5 rows per second
         rows += 5 * dt
         rows = min(rowsMax, rows)
+
+        if (T % 0.25 < dt) {
+          palc(3, randi(1, 11))
+        }
       }
 
       function draw() {
         cls(0)
 
-        const font = PIXEL_FONT_MINI
+        const font = PIXEL_FONT_BASIC
         textfont(font)
         textsize(1)
 
         for (let y = 0; y < round(rows); y++) {
           for (let x = 0; x < cols; x++) {
-            text(x * font.w, y * font.h, 'Z', 3)
+            text(x * font.w, y * font.h, randi(32, 125), 3)
           }
         }
       }
