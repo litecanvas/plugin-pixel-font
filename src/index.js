@@ -89,10 +89,19 @@ export default plugin = (engine, { cache = true } = {}) => {
 
     const charWidth = fontScale * currentFont.w
     const charHeight = fontScale * (currentFont.h || currentFont.w)
+    const offsetX = x
 
     for (let i = 0; i < str.length; i++) {
       const char = str[i]
       const charCode = char.charCodeAt()
+
+      if (10 === charCode) {
+        const gap = engine.stat(13) || 1.2
+        y = y + gap * currentFont.h * fontScale
+        x = offsetX
+        continue
+      }
+
       const bitmap = currentFont.chars[charCode - currentFont.first]
 
       if (bitmap) {

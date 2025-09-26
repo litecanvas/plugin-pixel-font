@@ -44,7 +44,7 @@
 
       litecanvas({
         width: margin * 2 + phrase.length * size * font.w,
-        height: margin * 3 + 2 * size * font.h,
+        height: margin * 4 + 2 * size * font.h,
         animate: false,
         autoscale: 0,
         canvas: 'canvas',
@@ -63,9 +63,12 @@
         textfont(font)
         textsize(size)
 
-        text(margin, margin, phrase.trim() + '?', color)
-
-        text(margin, margin * 3, phrase.trim().toLocaleUpperCase() + '!', color)
+        text(
+          margin,
+          margin,
+          `${phrase.trim()}?\n\n${phrase.trim().toLocaleUpperCase()}!`,
+          color
+        )
       }
     </script>
   </body>
