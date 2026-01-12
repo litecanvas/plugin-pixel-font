@@ -48,6 +48,15 @@ export default plugin = (engine, { cache = true } = {}) => {
     }
   }
 
+  /** @type {number?} */
+  let _bg = null
+  /**
+   * @param {number?} color
+   */
+  const textbg = (color) => {
+    _bg = color
+  }
+
   /**
    * @param {number} value
    */
@@ -95,15 +104,24 @@ export default plugin = (engine, { cache = true } = {}) => {
       const char = str[i]
       const charCode = char.charCodeAt()
 
-      if (10 === charCode) {
+      if ('\n' === char) {
         const gap = engine.stat(13) || 1.2
         y = y + gap * currentFont.h * fontScale
         x = offsetX
         continue
       }
 
-      const bitmap = currentFont.chars[charCode - currentFont.first]
+      if (_bg != null) {
+        engine.rectfill(
+          x,
+          y,
+          currentFont.w * fontScale,
+          currentFont.h * fontScale,
+          _bg
+        )
+      }
 
+      const bitmap = currentFont.chars[charCode - currentFont.first]
       if (bitmap) {
         if (cache) {
           const key = [
@@ -184,5 +202,6 @@ export default plugin = (engine, { cache = true } = {}) => {
 
   return {
     textfont,
+    textbg,
   }
 }
