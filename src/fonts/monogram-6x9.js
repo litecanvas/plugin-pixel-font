@@ -100,7 +100,7 @@ const characters = [
 ]
 
 export const font = {
-  id: 'basic',
+  id: 'monogram',
   chars: characters,
   // first char code
   first: 33,
