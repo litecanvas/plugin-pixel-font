@@ -20,23 +20,23 @@ export { font as PIXEL_FONT_MONOGRAM } from './fonts/monogram-6x9.js'
  * @param {boolean | number} config.cache
  */
 export default plugin = (engine, { cache = true } = {}) => {
-  // check if stat(12) exists
-  if (null == engine.stat(12)) {
-    throw `Plugin Pixel Font requires Litecanvas v0.99 or later`
-  }
+  const round = Math.round
 
   // litecanvas core methods
   const _core_text = engine.text
   const _core_textsize = engine.textsize
-  const _core_textalign = engine.textalign
   const _core_textfont = engine.textfont
+  const _core_textgap = engine.textgap
 
   /** @type {Map<string, ImageBitmap} */
   const cached = cache ? new Map() : null
+
   let fontScale = 1
+  let fontLineGap = 1
+  let _bg = null
 
   /** @type {LitecanvasPixelFont | null} */
-  let currentFont = null
+  let currentPixelFont = null
 
   DEV: {
     if (cache) {
@@ -48,10 +48,13 @@ export default plugin = (engine, { cache = true } = {}) => {
     }
   }
 
-  /** @type {number?} */
-  let _bg = null
+  let _defaultTextColor = 3
+  engine.listen('pal', (_, textColor) => {
+    _defaultTextColor = textColor
+  })
+
   /**
-   * @param {number?} color
+   * @param {number|string} color
    */
   const textbg = (color) => {
     _bg = color
@@ -61,13 +64,17 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {number} value
    */
   const setPixelFontScale = (value) => {
-    fontScale = ~~Math.round(value)
+    fontScale = ~~round(value)
   }
 
-  const setPixelFontAlign = () => {
-    return console.warn(
-      '[litecanvas/plugin-pixel-font] textalign() has not yet been implemented for pixel fonts'
-    )
+  /**
+   * Sets how many pixels separates lines of text.
+   * Default = `1`
+   *
+   * @param {number} value
+   */
+  const setPixelFontLineGap = (value) => {
+    fontLineGap = ~~round(value)
   }
 
   /**
@@ -77,11 +84,11 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {(number|undefined)[]} bitmap
    * @param {number?} color
    */
-  const renderChar = (posx, posy, bitmapChar, color = 3) => {
+  const renderChar = (posx, posy, bitmapChar, color) => {
     engine.push()
     engine.translate(posx, posy)
     engine.scale(fontScale)
-    currentFont.render(engine, bitmapChar, color)
+    currentPixelFont.render(engine, bitmapChar, color)
     engine.pop()
   }
 
@@ -91,69 +98,68 @@ export default plugin = (engine, { cache = true } = {}) => {
    * @param {string} str
    * @param {number?} color
    */
-  const renderPixelText = (x, y, str, color = 3) => {
+  const renderPixelText = (x, y, str, color = _defaultTextColor) => {
     str += ''
 
     if (!fontScale || !str.length) return
 
-    const charWidth = fontScale * currentFont.w
-    const charHeight = fontScale * (currentFont.h || currentFont.w)
-    const offsetX = x
+    const _ctx = engine.ctx()
+    const fontAlign = _ctx.textAlign
+    const fontBaseline = _ctx.textBaseline
+    const charWidth = fontScale * currentPixelFont.w
+    const charHeight = fontScale * (currentPixelFont.h || currentPixelFont.w)
+    const lines = str.split('\n')
+    const gap = fontLineGap * fontScale
 
-    for (let i = 0; i < str.length; i++) {
-      const char = str[i]
-      const charCode = char.charCodeAt()
+    let startY = y
 
-      if ('\n' === char) {
-        const gap = engine.stat(13) || 1.2
-        y = y + gap * currentFont.h * fontScale
-        x = offsetX
-        continue
+    if (fontBaseline === 'middle') {
+      startY = round(y - charHeight / 2)
+    } else if (fontBaseline === 'bottom') {
+      startY = y - charHeight
+    }
+
+    for (let l = 0; l < lines.length; l++) {
+      const line = lines[l]
+      const lineY = startY + l * (gap + charHeight)
+      let lineX = x
+
+      if (fontAlign === 'center') {
+        lineX = round(x - (line.length * charWidth) / 2)
+      } else if (fontAlign === 'right' || fontAlign === 'end') {
+        lineX = x - line.length * charWidth
       }
 
-      if (_bg != null) {
-        engine.rectfill(
-          x,
-          y,
-          currentFont.w * fontScale,
-          currentFont.h * fontScale,
-          _bg
-        )
-      }
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+        const charCode = char.charCodeAt(0)
 
-      const bitmap = currentFont.chars[charCode - currentFont.first]
-      if (bitmap) {
-        if (cache) {
-          const key = [
-            currentFont.id,
-            char,
-            ~~color,
-            charWidth,
-            engine.stat(12).join(','),
-          ].join(':')
-
-          // check the cache
-          if (!cached.has(key)) {
-            // create an char image and cache it
-            cached.set(
-              key,
-              engine.paint(charWidth, charHeight, () => {
-                renderChar(0, 0, bitmap, ~~color)
-              })
-            )
-          }
-          // get the cached char image
-          const img = cached.get(key)
-
-          // draw the char as image (better performance)
-          engine.image(x, y, img)
-        } else {
-          // with cached disabled, draw the char pixel by pixel
-          renderChar(x, y, bitmap, color)
+        if (_bg != null) {
+          engine.rectfill(lineX, lineY, charWidth, charHeight, _bg)
         }
-      }
 
-      x += charWidth
+        const bitmap = currentPixelFont.chars[charCode - currentPixelFont.first]
+        if (bitmap) {
+          if (cache) {
+            const key = [currentPixelFont.id, char, color, charWidth].join(':')
+
+            if (!cached.has(key)) {
+              cached.set(
+                key,
+                engine.paint(charWidth, charHeight, () => {
+                  renderChar(0, 0, bitmap, color)
+                })
+              )
+            }
+            const img = cached.get(key)
+            engine.image(lineX, lineY, img)
+          } else {
+            renderChar(lineX, lineY, bitmap, color)
+          }
+        }
+
+        lineX += charWidth
+      }
     }
   }
 
@@ -174,29 +180,28 @@ export default plugin = (engine, { cache = true } = {}) => {
       cached.clear()
     })
 
-    // also clear the cache when pal() is called
-    const _core_pal = engine.pal
-    engine.def('pal', (colors) => {
+    engine.listen('pal', () => {
       cached.clear()
-      return _core_pal(colors)
     })
   }
 
   /**
-   * @param {string | typeof defaultFont} font
+   * @param {string | LitecanvasPixelFont} font
    */
   const textfont = (font) => {
-    if ('object' === typeof font) {
-      engine.def('text', renderPixelText)
-      engine.def('textsize', setPixelFontScale)
-      engine.def('textalign', setPixelFontAlign)
-      currentFont = font
-      setPixelFontScale(fontScale || 1)
-    } else {
-      engine.def('text', _core_text)
-      engine.def('textsize', _core_textsize)
-      engine.def('textalign', _core_textalign)
-      _core_textfont(font)
+    if (font !== currentPixelFont) {
+      if ('object' === typeof font) {
+        engine.def('text', renderPixelText)
+        engine.def('textsize', setPixelFontScale)
+        engine.def('textgap', setPixelFontLineGap)
+        currentPixelFont = font
+        setPixelFontScale(fontScale || 1)
+      } else {
+        engine.def('text', _core_text)
+        engine.def('textsize', _core_textsize)
+        engine.def('textgap', _core_textgap)
+        _core_textfont(font)
+      }
     }
   }
 

@@ -104,7 +104,7 @@ const characters = [
  * @param {(number|undefined)[]} bitmap
  * @param {number?} color
  */
-const render = (engine, bitmap, color = 3) => {
+const render = (engine, bitmap, color) => {
   for (let y = 0; y < 6; y++) {
     for (let x = 0; x < 4; x++) {
       const i = ~~(y / 2)

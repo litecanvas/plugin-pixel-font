@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -47,14 +47,12 @@
       })
       use(pluginFrameRateMeter)
 
+      colors = [1, 2, 3, 'red', 'green', 'blue']
+
       function update(dt) {
         // add 5 rows per second
         rows += 5 * dt
         rows = min(rowsMax, rows)
-
-        if (T % 0.25 < dt) {
-          palc(3, randi(1, 3))
-        }
       }
 
       function draw() {
@@ -66,7 +64,12 @@
 
         for (let y = 0; y < round(rows); y++) {
           for (let x = 0; x < cols; x++) {
-            text(x * font.w, y * font.h, randi(32, 125), 3)
+            text(
+              x * font.w,
+              y * font.h,
+              String.fromCharCode(randi(32, 125)),
+              colors[randi(0, colors.length - 1)]
+            )
           }
         }
       }

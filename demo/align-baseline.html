@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+    user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0"
+    />
+    <title>Litecanvas Plugin</title>
+    <style type="text/css">
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="btn" data-key="baseline">Top</button>
+    <button class="btn" data-key="baseline">Bottom</button>
+    <button class="btn" data-key="baseline">Middle</button>
+    <br />
+    <button class="btn" data-key="align">Left</button>
+    <button class="btn" data-key="align">Right</button>
+    <button class="btn" data-key="align">Center</button>
+    <br />
+    <canvas id="game"></canvas>
+
+    <script src="https://unpkg.com/litecanvas/dist/dist.js"></script>
+    <script src="/dist/dist.js"></script>
+    <script>
+      let size = 2
+      let font = PIXEL_FONT_BASIC
+
+      litecanvas({
+        width: 640,
+        height: 480,
+        pixelart: true,
+        animate: false,
+        autoscale: 0,
+        canvas: '#game',
+      })
+
+      use(pluginPixelFont)
+
+      const state = {
+        align: 'start',
+        baseline: 'top',
+      }
+
+      function init() {
+        document.body.querySelectorAll('.btn').forEach((el) =>
+          el.addEventListener('click', () => {
+            const key = el.dataset.key
+            const value = el.textContent.toLowerCase()
+            state[key] = value
+          })
+        )
+      }
+
+      function draw() {
+        cls(0)
+        let color = 0
+
+        textfont(font)
+        textsize(size)
+
+        line(W / 2, 0, W / 2, H, 1)
+        line(0, H / 2, W, H / 2, 1)
+
+        textalign(state.align, state.baseline)
+        text(W / 2, H / 2, 'lorem ipsum\ndolor sit\namet')
+      }
+    </script>
+  </body>
+</html>

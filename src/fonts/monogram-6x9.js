@@ -114,7 +114,7 @@ export const font = {
    * @param {(number|undefined)[]} bitmap
    * @param {number?} color
    */
-  render: (engine, bitmap, color = 3) => {
+  render: (engine, bitmap, color) => {
     for (let y = 0; y < 9; y++) {
       for (let x = 0; x < 6; x++) {
         if ((bitmap[y] | 0) & (1 << x)) {
